@@ -79,7 +79,7 @@ class CLI
     end
   end
 
-  def parse(command)
+  def validate(command)
     command = command.downcase.to_sym
     valid_commands = [:pass,:fail,:score,:trend,:reset]
     raise "invalid command! \n valid commands are #{valid_commands.inspect}" unless valid_commands.include? command
@@ -87,7 +87,7 @@ class CLI
   end
 
   def submit_command(command)
-    command = parse(command)
+    command = validate(command)
     if logger.forecast
       submit_outcome(command)
     else
@@ -119,17 +119,6 @@ class CLI
     logger.clear_all
   end
 
-
-  #
-  # private
-  #
-  # def state=(value)
-  #   @logger.state = value
-  # end
-  #
-  # def state
-  #   @logger.state
-  # end
 
 end
 
