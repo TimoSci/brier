@@ -19,10 +19,12 @@ class Logger
 
   def save(outcome)
     current_forecast = self.forecast
+    entry = {time: Time.now.utc, probability: current_forecast, outcome: outcome}
     database.transaction do
-       database[:forecasts] << {time: Time.now.utc, probability: current_forecast, outcome: outcome}
+       database[:forecasts] << entry
     end
     self.forecast = nil
+    entry
   end
 
   def all_forecasts
@@ -103,13 +105,14 @@ class CLI
 
   def enter_forecast(probability)
     raise "Probability must be between 0 and 1" unless probability >=0 && probability <= 1
+    puts "Probability of outcome set to #{probability}"
     logger.forecast = probability
   end
 
   def submit_outcome(command)
     if [:pass,:fail].include? command
        outcome = {pass: 1, fail: 0}
-       logger.save(outcome[command])
+       puts logger.save(outcome[command])
     else
       raise "Invalide outcome! Must be pass or fail"
     end
@@ -150,18 +153,3 @@ class CLI
 
 
 end
-
-
-
-
-#ARGV.first
-
-
-
-c = CLI.new
-# system("VAR=2")
-
-# logger = Logger.new
-# zache.put(:status,:ready)
-
-binding.pry
