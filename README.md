@@ -2,7 +2,7 @@
 
 A simple command line tool keeps track of your **brier score** as a developer.
 
-## Purpose&Motivation
+## Purpose & Motivation
 
 By measuring and tracking your ability to estimate the likelihood of bugs occurring in your code, you can
 consciously improve that ability.
