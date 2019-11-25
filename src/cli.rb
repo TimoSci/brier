@@ -33,6 +33,13 @@ class Logger
     database.transaction{database[:current_forecast]}
   end
 
+  def clear_all
+      database.transaction{
+        database[:current_forecast] = nil
+        database[:forecasts] = []
+      }
+  end
+
 end
 
 
@@ -67,20 +74,29 @@ class CLI
   end
 
   def submit(argument)
-    if logger.forecast
-      submit_result(argument)
-    else
-      submit_query(argument)
-    end
-  end
-
-  def submit_query(argument)
     if /\A\d*\.?\d+\z/ =~ argument
       enter_forecast(argument.to_f)
     else
-      parse(argument)
+      submit_command(argument)
     end
   end
+
+  def parse(command)
+    command = command.downcase.to_sym
+    valid_commands = [:pass,:fail,:score,:trend,:reset]
+    raise "invalid command! \n valid commands are #{valid_commands.inspect}" unless valid_commands.include? command
+    command
+  end
+
+  def submit_command(command)
+    command = parse(command)
+    if logger.forecast
+      submit_outcome(command)
+    else
+      submit_query(command)
+    end
+  end
+
 
   def enter_forecast(probability)
     raise "Probability must be between 0 and 1" unless probability >=0 && probability <= 1
@@ -88,16 +104,23 @@ class CLI
     logger.forecast = probability
   end
 
-  def parse(command)
-    valid_commands = [:pass,:fail,:score,:trend,:reset]
-    command = command.to_sym
-    raise "invalid command! \n valid commands are #{valid_commands.inspect}" unless valid_commands.include? command
+  def submit_outcome(command)
     if [:pass,:fail].include? command
        outcome = {pass: 1, fail: 0}
-       # binding.pry
        logger.save(outcome[command])
+    else
+      raise "Invalide outcome! Must be pass or fail"
     end
   end
+
+  def submit_query(command)
+    pp command
+  end
+
+  def clear_data
+    logger.clear_all
+  end
+
 
   #
   # private

@@ -1,4 +1,3 @@
 ---
-:current_forecast: []
-:forecasts:
-- 1111
+:current_forecast: 
+:forecasts: []
