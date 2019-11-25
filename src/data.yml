@@ -1,3 +1,12 @@
 ---
 :current_forecast: 
-:forecasts: []
+:forecasts:
+- :time: 2019-11-25 21:45:07.625268938 Z
+  :forecast: 0.2
+  :outcome: 1
+- :time: 2019-11-25 21:46:30.549373569 Z
+  :forecast: 0.8
+  :outcome: 0
+- :time: 2019-11-25 21:48:39.756290631 Z
+  :forecast: 0.7
+  :outcome: 0

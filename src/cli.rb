@@ -16,20 +16,18 @@ class Logger
   end
 
   def save(outcome)
-    forecasts =  database.transaction{database[:forecasts]}
+    current_forecast = self.forecast
     database.transaction do
-       # database[:forecasts] = (database[:forecasts]<<{time: Time.now.utc, forecast: self.forecast, outcome: outcome})
-       binding.pry
-       database[:forecasts] = forecasts<<{time: Time.now.utc, forecast: self.forecast, outcome: outcome}
+       database[:forecasts] << {time: Time.now.utc, forecast: current_forecast, outcome: outcome}
     end
     self.forecast = nil
   end
 
-  def forecast=(value) #TODO: store state in memory (environment variable?)
+  def forecast=(value)  #TODO: store state in memory not disk (environment variable?)
     database.transaction{database[:current_forecast] = value}
   end
 
-  def forecast #TODO: store state in memory not disk (environment variable?)
+  def forecast
     database.transaction{database[:current_forecast]}
   end
 
