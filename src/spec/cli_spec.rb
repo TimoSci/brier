@@ -1,12 +1,16 @@
 require 'rspec'
 require_relative '../cli.rb'
 
-logger = Logger.new("#{APP_PATH}/data/testdata.yml")
+TEST_FILE="#{APP_PATH}/data/testdata.yml"
+
+logger = Logger.new(TEST_FILE)
 logger.clear_all
+
+# Forecast.database = (YAML::Store.new(TEST_FILE))
 
 describe CLI do
 
-  cli = described_class.new(logger)
+  cli = described_class.new(logger,YAML::Store.new(TEST_FILE))
 
   it 'should retrurn a nil score for a newly intialized client' do
     expect(cli.score).to be nil

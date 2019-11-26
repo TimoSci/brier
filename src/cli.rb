@@ -107,18 +107,34 @@ class Forecast < Hash
   extend YamlMappingClass
   include YamlMapping
 
+
+  def self.current
+    database.transaction{database[:current_forecast]}
+  end
+
+  def self.current=(proablility)
+    database.transaction{database[:current_forecast] = proablility}
+  end
+
   def save
     self[:time] =  Time.now.utc
     super
+  end
+
+  def save_with_current
+    self[:probability] = self.class.current
+    save
+    self.class.current = nil
   end
 
 end
 
 
 
-Forecast.database = (YAML::Store.new(DATA_FILE))
-f = Forecast.new
-f[:foo] = "bar"
+
+# Forecast.database = (YAML::Store.new(DATA_FILE))
+# f = Forecast.new
+# f[:foo] = "bar"
 
 
 
@@ -133,8 +149,9 @@ class CLI
 
   include ScoreFunctions
 
-  def initialize(logger = Logger.new)
+  def initialize(logger = Logger.new, database = YAML::Store.new(DATA_FILE))
     @logger = logger
+    Forecast.database = database
   end
 
   def parse(argument)
@@ -181,10 +198,10 @@ class CLI
   def submit_outcome(command)
     if [:pass,:fail].include? command
        outcome = {pass: 1, fail: 0}
-       # f = Forecast.new
-       # f[:outcome] = outcome[command]
-       # f.save
-       puts logger.save(outcome[command])
+       f = Forecast.new
+       f[:outcome] = outcome[command]
+       f.save_with_current
+       # puts logger.save(outcome[command])
     else
       raise "Invalide outcome! Must be pass or fail"
     end
