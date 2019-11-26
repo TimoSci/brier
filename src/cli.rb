@@ -1,8 +1,9 @@
 require 'pry'
-
 require 'yaml/store'
 
-DATA_PATH = "/home/tfj/code/brier/data/"
+require_relative '../config.rb'
+
+DATA_PATH = "#{APP_PATH}/data/"
 DATA_FILENAME = 'forecasts.yml'
 
 DATA_FILE = DATA_PATH+DATA_FILENAME
@@ -83,7 +84,7 @@ class CLI
   end
 
   def parse(argument)
-    raise "Argument must not be empty" if argument.empty?
+    raise "Argument must not be empty" if !argument || argument.empty?
     return argument.to_f if /\A\d*\.?\d+\z/ =~ argument
     argument.scan(/(\d+)\/(\d+)/).tap do |rational|
       argument = Rational(rational.first,rational.second) if rational.size == 2

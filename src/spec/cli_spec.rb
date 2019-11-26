@@ -1,7 +1,7 @@
 require 'rspec'
 require_relative '../cli.rb'
 
-logger = Logger.new('./testdata.yml')
+logger = Logger.new("#{APP_PATH}/data/testdata.yml")
 logger.clear_all
 
 describe CLI do
