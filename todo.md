@@ -1,0 +1,1 @@
+- Catch Ruby errors and display more user friendly message on standard output

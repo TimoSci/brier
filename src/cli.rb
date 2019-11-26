@@ -53,6 +53,74 @@ class Logger
 end
 
 
+module YamlMappingClass
+
+  def database
+    @@database
+  end
+
+  def database=(db)
+    @@database = db
+  end
+
+  def klass
+    (self.to_s.downcase+"s").to_sym # don't use #pluralize right now to keep things simple
+  end
+
+  def all
+    database.transaction{ database[klass] }
+  end
+
+  def last
+    database.transaction{ database[klass].last }
+  end
+
+  def clear_all
+      database.transaction{
+        database[klass] = nil
+      }
+  end
+
+end
+
+module YamlMapping
+
+  def find
+  end
+
+  def database
+    @database ||= self.class.database
+  end
+
+  def save
+    database.transaction do
+       database[self.class.klass] << self.to_h
+    end
+  end
+
+end
+
+
+class Forecast < Hash
+
+  extend YamlMappingClass
+  include YamlMapping
+
+  def save
+    self[:time] =  Time.now.utc
+    super
+  end
+
+end
+
+
+
+Forecast.database = (YAML::Store.new(DATA_FILE))
+f = Forecast.new
+f[:foo] = "bar"
+
+
+
 module ScoreFunctions
 
 # Score functions for scoring probability estimates
@@ -127,6 +195,9 @@ class CLI
   def submit_outcome(command)
     if [:pass,:fail].include? command
        outcome = {pass: 1, fail: 0}
+       # f = Forecast.new
+       # f[:outcome] = outcome[command]
+       # f.save
        puts logger.save(outcome[command])
     else
       raise "Invalide outcome! Must be pass or fail"

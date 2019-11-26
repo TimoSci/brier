@@ -59,4 +59,16 @@ describe CLI do
 
   end
 
+
+  it 'should reset the data store' do
+    cli.submit "reset"
+    expect(cli.score).to be nil
+    10.times do
+      cli.submit rand.to_s
+      cli.submit ["pass","fail"].sample
+    end
+    cli.submit "reset"
+    expect(cli.score).to be nil
+  end
+
 end
