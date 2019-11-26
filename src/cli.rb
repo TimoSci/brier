@@ -2,8 +2,10 @@ require 'pry'
 
 require 'yaml/store'
 
-DATA_LOCATION = './data.yml'
+DATA_PATH = "/home/tfj/code/brier/data/"
+DATA_FILENAME = 'forecasts.yml'
 
+DATA_FILE = DATA_PATH+DATA_FILENAME
 
 class Logger
 
@@ -11,7 +13,7 @@ class Logger
 
   attr_reader :database
 
-  def initialize(database=DATA_LOCATION)
+  def initialize(database=DATA_FILE)
     @database = YAML::Store.new(database)
     @database.transaction{ @database[:current_forecast] ||= nil}
     @database.transaction{ @database[:forecasts] ||= []}
@@ -60,7 +62,9 @@ module ScoreFunctions
   end
 
   def brier_score(single_brier_scores)
-    single_brier_scores.sum/single_brier_scores.size
+    sample_size = single_brier_scores.size
+    return nil if sample_size == 0
+    single_brier_scores.sum/sample_size
   end
 
 end
@@ -78,18 +82,28 @@ class CLI
     @logger = logger
   end
 
+  def parse(argument)
+    raise "Argument must not be empty" if argument.empty?
+    return argument.to_f if /\A\d*\.?\d+\z/ =~ argument
+    argument.scan(/(\d+)\/(\d+)/).tap do |rational|
+      argument = Rational(rational.first,rational.second) if rational.size == 2
+    end
+    argument = argument.to_sym if /\D+/ =~ argument
+    argument
+  end
+
   def submit(argument)
-    if /\A\d*\.?\d+\z/ =~ argument
-      enter_forecast(argument.to_f)
+    argument = parse(argument)
+    if Numeric === argument
+      enter_forecast(argument)
     else
       submit_command(argument)
     end
   end
 
   def validate(command)
-    command = command.downcase.to_sym
     valid_commands = [:pass,:fail,:score,:trend,:reset]
-    raise "invalid command! \n valid commands are #{valid_commands.inspect}" unless valid_commands.include? command
+    raise "invalid command #{command}! \n valid commands are #{valid_commands.inspect}" unless valid_commands.include? command
     command
   end
 
@@ -145,9 +159,12 @@ class CLI
   end
 
   def reset
+    puts "Resetting data store and archiving old values... "
+    filename = DATA_FILE+".archive_#{Time.now.tv_sec}"
+    system "cp #{DATA_FILE} #{filename}"
     # puts "Reset datastore. Are you sure? (y/n)"
     # if gets == 'y'
-      "reset"
+      clear_data
     # end
   end
 

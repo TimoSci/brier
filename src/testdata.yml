@@ -1,0 +1,9 @@
+---
+:current_forecast: 
+:forecasts:
+- :time: 2019-11-26 16:28:29.111482301 Z
+  :probability: 1.0
+  :outcome: 0
+- :time: 2019-11-26 16:28:29.112752437 Z
+  :probability: 1.0
+  :outcome: 1
