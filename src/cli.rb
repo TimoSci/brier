@@ -220,8 +220,14 @@ class CLI
   end
 
 
-  def clear_data
-    Forecast.clear_all
+  def reset
+    puts "Resetting data store and archiving old values... "
+    filename = DATA_FILE+".archive_#{Time.now.tv_sec}"
+    system "cp #{DATA_FILE} #{filename}"
+    # puts "Reset datastore. Are you sure? (y/n)"
+    # if gets == 'y'
+      Forecast.clear_all
+    # end
   end
 
   #
@@ -229,7 +235,7 @@ class CLI
   #
 
   def score
-    forecasts = logger.all_forecasts
+    forecasts = Forecast.all
     brier_scores = forecasts.map do |forecast|
       single_brier_score(forecast[:probability],forecast[:outcome])
     end
@@ -240,15 +246,7 @@ class CLI
     "<<<palceholder for printing trend>>>"
   end
 
-  def reset
-    puts "Resetting data store and archiving old values... "
-    filename = DATA_FILE+".archive_#{Time.now.tv_sec}"
-    system "cp #{DATA_FILE} #{filename}"
-    # puts "Reset datastore. Are you sure? (y/n)"
-    # if gets == 'y'
-      clear_data
-    # end
-  end
+
 
 
 end
