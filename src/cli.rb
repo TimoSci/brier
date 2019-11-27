@@ -77,9 +77,7 @@ module YamlMappingClass
   end
 
   def clear_all
-      database.transaction{
-        database[klass] = nil
-      }
+      database.transaction{ database[klass] = [] }
   end
 
 end
@@ -114,6 +112,11 @@ class Forecast < Hash
 
   def self.current=(proablility)
     database.transaction{database[:current_forecast] = proablility}
+  end
+
+  def self.clear_all
+    current = nil
+    super
   end
 
   def save
@@ -164,6 +167,9 @@ class CLI
     argument
   end
 
+  # submissions
+  #
+
   def submit(argument)
     argument = parse(argument)
     if Numeric === argument
@@ -181,7 +187,7 @@ class CLI
 
   def submit_command(command)
     command = validate(command)
-    if logger.forecast
+    if Forecast.current
       submit_outcome(command)
     else
       submit_query(command)
@@ -192,7 +198,7 @@ class CLI
   def enter_forecast(probability)
     raise "Probability must be between 0 and 1" unless probability >=0 && probability <= 1
     puts "Probability of outcome set to #{probability}"
-    logger.forecast = probability
+    Forecast.current = probability
   end
 
   def submit_outcome(command)
@@ -201,7 +207,7 @@ class CLI
        f = Forecast.new
        f[:outcome] = outcome[command]
        f.save_with_current
-       # puts logger.save(outcome[command])
+       f
     else
       raise "Invalide outcome! Must be pass or fail"
     end
@@ -215,11 +221,12 @@ class CLI
 
 
   def clear_data
-    logger.clear_all
+    Forecast.clear_all
   end
 
-
-  #queries
+  #
+  # queries
+  #
 
   def score
     forecasts = logger.all_forecasts
