@@ -3,14 +3,10 @@ require_relative '../cli.rb'
 
 TEST_FILE="#{APP_PATH}/data/testdata.yml"
 
-logger = Logger.new(TEST_FILE)
-logger.clear_all
-
-# Forecast.database = (YAML::Store.new(TEST_FILE))
 
 describe CLI do
 
-  cli = described_class.new(logger,YAML::Store.new(TEST_FILE))
+  cli = described_class.new(YAML::Store.new(TEST_FILE))
 
   it 'should retrurn a nil score for a newly intialized client' do
     expect(cli.score).to be nil
@@ -34,27 +30,27 @@ describe CLI do
 
   it 'should compute the correct brier scores' do
 
-    logger.clear_all
+    Forecast.clear_all
     cli.submit "1"
     cli.submit "pass"
     expect(cli.score).to eq 0
 
-    logger.clear_all
+    Forecast.clear_all
     cli.submit "1"
     cli.submit "fail"
     expect(cli.score).to eq 1
 
-    logger.clear_all
+    Forecast.clear_all
     cli.submit "0"
     cli.submit "pass"
     expect(cli.score).to eq 1
 
-    logger.clear_all
+    Forecast.clear_all
     cli.submit "0"
     cli.submit "fail"
     expect(cli.score).to eq 0
 
-    logger.clear_all
+    Forecast.clear_all
     cli.submit "1"
     cli.submit "fail"
     cli.submit "1"

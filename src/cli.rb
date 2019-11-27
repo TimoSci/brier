@@ -9,49 +9,7 @@ DATA_FILENAME = 'forecasts.yml'
 
 DATA_FILE = DATA_PATH+DATA_FILENAME
 
-class Logger
 
-  #TOD0 separate forecasts and current forecast into separate classes in an ORM style
-
-  attr_reader :database
-
-  def initialize(database=DATA_FILE)
-    @database = YAML::Store.new(database)
-    @database.transaction{ @database[:current_forecast] ||= nil}
-    @database.transaction{ @database[:forecasts] ||= []}
-  end
-
-  def save(outcome)
-    current_forecast = self.forecast
-    entry = {time: Time.now.utc, probability: current_forecast, outcome: outcome}
-    database.transaction do
-       database[:forecasts] << entry
-    end
-    self.forecast = nil
-    entry
-  end
-
-  def all_forecasts
-    database.transaction{ database[:forecasts] }
-  end
-
-
-  def forecast=(value)  #TODO: store state in memory not disk (environment variable?)
-    database.transaction{database[:current_forecast] = value}
-  end
-
-  def forecast
-    database.transaction{database[:current_forecast]}
-  end
-
-  def clear_all
-      database.transaction{
-        database[:current_forecast] = nil
-        database[:forecasts] = []
-      }
-  end
-
-end
 
 
 module YamlMappingClass
@@ -135,25 +93,14 @@ end
 
 
 
-# Forecast.database = (YAML::Store.new(DATA_FILE))
-# f = Forecast.new
-# f[:foo] = "bar"
-
-
-
-
-
-
 class CLI
 
 # Command line interface methods
 #
-  attr_reader :logger
 
   include ScoreFunctions
 
-  def initialize(logger = Logger.new, database = YAML::Store.new(DATA_FILE))
-    @logger = logger
+  def initialize(database = YAML::Store.new(DATA_FILE))
     Forecast.database = database
   end
 
