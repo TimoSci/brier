@@ -8,6 +8,7 @@ module YamlMappingClass
 
   def database=(db)
     @@database = db
+    @@database.transaction{ @@database[klass] ||= []}
   end
 
   def klass
