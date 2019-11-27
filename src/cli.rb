@@ -3,94 +3,13 @@ require 'yaml/store'
 
 require_relative '../config.rb'
 require_relative 'score_functions.rb'
+require_relative 'yaml_mapping.rb'
+require_relative 'forecast.rb'
 
 DATA_PATH = "#{APP_PATH}/data/"
 DATA_FILENAME = 'forecasts.yml'
 
 DATA_FILE = DATA_PATH+DATA_FILENAME
-
-
-
-
-module YamlMappingClass
-
-  def database
-    @@database
-  end
-
-  def database=(db)
-    @@database = db
-  end
-
-  def klass
-    (self.to_s.downcase+"s").to_sym # don't use #pluralize right now to keep things simple
-  end
-
-  def all
-    database.transaction{ database[klass] }
-  end
-
-  def last
-    database.transaction{ database[klass].last }
-  end
-
-  def clear_all
-      database.transaction{ database[klass] = [] }
-  end
-
-end
-
-module YamlMapping
-
-  def find
-  end
-
-  def database
-    @database ||= self.class.database
-  end
-
-  def save
-    database.transaction do
-       database[self.class.klass] << self.to_h
-    end
-  end
-
-end
-
-
-class Forecast < Hash
-
-  extend YamlMappingClass
-  include YamlMapping
-
-
-  def self.current
-    database.transaction{database[:current_forecast]}
-  end
-
-  def self.current=(proablility)
-    database.transaction{database[:current_forecast] = proablility}
-  end
-
-  def self.clear_all
-    current = nil
-    super
-  end
-
-  def save
-    self[:time] =  Time.now.utc
-    super
-  end
-
-  def save_with_current
-    self[:probability] = self.class.current
-    save
-    self.class.current = nil
-  end
-
-end
-
-
 
 
 class CLI
@@ -190,10 +109,8 @@ class CLI
   end
 
   def trend
-    "<<<palceholder for printing trend>>>"
+    "<<<placeholder for printing trend>>>"
   end
-
-
 
 
 end
