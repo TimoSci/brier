@@ -21,6 +21,9 @@ class CLI
 
   include ScoreFunctions
 
+  @@queries = [:score,:trend,:reset,:stats]
+  @@answers = [:pass,:fail]
+
   def initialize(database = YAML::Store.new(DATA_FILE))
     Forecast.database = database
   end
@@ -49,7 +52,7 @@ class CLI
   end
 
   def validate(command)
-    valid_commands = [:pass,:fail,:score,:trend,:reset]
+    valid_commands =   @@queries+@@answers
     raise "invalid command #{command}! \n valid commands are #{valid_commands.inspect}" unless valid_commands.include? command
     command
   end
@@ -84,9 +87,9 @@ class CLI
   end
 
   def submit_query(query)
-    valid_queries = [:score,:trend,:reset]
+    valid_queries = @@queries
     raise "invalid query! \n Valid queries are #{valid_queries.inspect}" unless valid_queries.include? query
-    pp self.public_send(query)
+    puts self.public_send(query)
   end
 
 
@@ -106,6 +109,10 @@ class CLI
 
   def score
     Forecast.score
+  end
+
+  def stats
+    "score: #{score}  pass_rate: #{Forecast.pass_rate}"
   end
 
   def trend

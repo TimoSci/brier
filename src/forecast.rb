@@ -32,12 +32,9 @@ class Forecast < Hash
 
   # global queries
 
-  def self.stats
+  def self.pass_rate
     forecasts = self.all
-    forecasts.map do |forecast|
-       forecast[:outcome]
-    end
-    brier_score(brier_scores)
+    forecasts.map{ |forecast| forecast[:outcome] }.sum.to_f/forecasts.size
   end
 
   def self.score
