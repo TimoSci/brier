@@ -30,7 +30,7 @@ class Forecast < Hash
     self.class.current = nil
   end
 
-  # queries
+  # global queries
 
   def self.stats
     forecasts = self.all
