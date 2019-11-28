@@ -39,7 +39,7 @@ class CLI
   #
 
   def submit(keyword,*args)
-    self.path = args.first
+    self.path = args.first&.chop
     keyword = parse(keyword)
     if Numeric === keyword
       enter_forecast(keyword)
@@ -75,6 +75,7 @@ class CLI
        outcome = {pass: 1, fail: 0}
        f = Forecast.new
        f[:outcome] = outcome[command]
+       f[:context_path] = path
        f.save_with_current
        f
     else
@@ -106,8 +107,6 @@ class CLI
   def score
     Forecast.score
   end
-
-
 
   def trend
     "<<<placeholder for printing trend>>>"
