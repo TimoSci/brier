@@ -24,11 +24,11 @@ Hopefully, as you get better at predicting bugs, you are less likely to write th
 
 `brier score`
 
-4. To track how you are trending
+To track how you are trending
 
 `brier trend`
 
-5. To delete your score and start afresh
+To delete your score and start afresh
 
 `brier reset`
 
@@ -44,6 +44,8 @@ Hopefully, as you get better at predicting bugs, you are less likely to write th
 * As you gain experience, build heuristics in your head for **prior probabilities** of bugs for different classes of code. Then, apply **Bayes' Rule** to the individual case to refine your probability estimate.
 
 * Sometimes a good way to estimate probabilities is **counterfactual thinking**. Do a thought experiment where you imagine a large number of parallel universes. They are deterministic and almost identical to our universe, except they differ by some small detail (eg. in one universe you made a typo in your function declaration and in another you didn't). Then imagine the universes evolving over time. Then ask, how many universes have outcome X, how many have outcome Y?
+
+* Alternatively, a **Frequentist** philosophy can be applied. Use the historic average of unit test pass rate as a **prior probability** for a first estimate. get the pass rate in current context (path) by typing `brier stats` 
 
 * As you gain confidence, make your predictions more precise. Start with single digits after the comma and then move on to double digits.
 
