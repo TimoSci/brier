@@ -4,4 +4,5 @@ load "#{APP_PATH}/src/cli.rb"
 
 client = CLI.new
 keyword = ARGV.first
-client.submit(keyword)
+directory = `pwd`
+client.submit(keyword,directory)

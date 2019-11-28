@@ -12,10 +12,12 @@ DATA_FILENAME = 'forecasts.yml'
 DATA_FILE = DATA_PATH+DATA_FILENAME
 
 
+
 class CLI
 
 # Command line interface methods
-#
+# TODO split controller and CLI into separate classes
+  attr_accessor :path
 
   include ScoreFunctions
 
@@ -36,12 +38,13 @@ class CLI
   # submissions
   #
 
-  def submit(argument)
-    argument = parse(argument)
-    if Numeric === argument
-      enter_forecast(argument)
+  def submit(keyword,*args)
+    self.path = args.first
+    keyword = parse(keyword)
+    if Numeric === keyword
+      enter_forecast(keyword)
     else
-      submit_command(argument)
+      submit_command(keyword)
     end
   end
 
@@ -101,16 +104,21 @@ class CLI
   #
 
   def score
-    forecasts = Forecast.all
-    brier_scores = forecasts.map do |forecast|
-      single_brier_score(forecast[:probability],forecast[:outcome])
-    end
-    brier_score(brier_scores)
+    Forecast.score
   end
+
+
 
   def trend
     "<<<placeholder for printing trend>>>"
   end
 
+  private
+
+  # def raise(message)
+  # #change behaviour of raise
+  #   rescue
+  #   puts message
+  # end
 
 end
