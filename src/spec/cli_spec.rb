@@ -21,11 +21,13 @@ describe CLI do
   end
 
   it 'should record forecasts and return a score' do
-    10.times do
-      cli.submit rand.to_s
-      cli.submit ["pass","fail"].sample
+    5.times do
+      10.times do
+        cli.submit rand.to_s
+        cli.submit ["pass","fail"].sample
+      end
+      expect(cli.score).to be_between(0,2)
     end
-    expect(cli.score).to be_between(0,1)
   end
 
   it 'should compute the correct brier scores' do
@@ -33,29 +35,29 @@ describe CLI do
     Forecast.clear_all
     cli.submit "1"
     cli.submit "pass"
-    expect(cli.score).to eq 0
+    expect(cli.score).to eq 0.0
 
     Forecast.clear_all
     cli.submit "1"
     cli.submit "fail"
-    expect(cli.score).to eq 1
+    expect(cli.score).to eq 2.0
 
     Forecast.clear_all
     cli.submit "0"
     cli.submit "pass"
-    expect(cli.score).to eq 1
+    expect(cli.score).to eq 2.0
 
     Forecast.clear_all
     cli.submit "0"
     cli.submit "fail"
-    expect(cli.score).to eq 0
+    expect(cli.score).to eq 0.0
 
     Forecast.clear_all
     cli.submit "1"
     cli.submit "fail"
     cli.submit "1"
     cli.submit "pass"
-    expect(cli.score).to eq 0.5
+    expect(cli.score).to eq 1.0
 
   end
 

@@ -116,7 +116,7 @@ class CLI
   end
 
   def trend
-    "<<<placeholder for printing trend>>>"
+    Forecast.trend(10).take(20)
   end
 
   private

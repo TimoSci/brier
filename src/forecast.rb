@@ -31,6 +31,7 @@ class Forecast < Hash
   end
 
   # global queries
+  #
 
   def self.pass_rate
     forecasts = self.all
@@ -40,9 +41,17 @@ class Forecast < Hash
   def self.score
     forecasts = self.all
     brier_scores = forecasts.map do |forecast|
-      single_brier_score(forecast[:probability],forecast[:outcome])
+      binary_brier_score(forecast[:probability],forecast[:outcome])
     end
-    brier_score(brier_scores)
+    average(brier_scores)
+  end
+
+  def self.trend(n)
+    forecasts = self.all
+    brier_scores = forecasts.map do |forecast|
+      binary_brier_score(forecast[:probability],forecast[:outcome])
+    end
+    moving_average(brier_scores,n)
   end
 
 end
