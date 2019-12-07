@@ -49,6 +49,7 @@ To delete your score and start afresh
 
 * As you gain confidence, make your predictions more precise. Start with single digits after the comma and then move on to double digits.
 
+* Only make small changes to your code. Change one specific aspect (ideally, one line of code). Then predict the test outcome. Then test. Rinse and repeat Don't try to make several unrealted changes and then try to estimate a prediction. This will make it harder to reason about your estimate. 
 ---
 
 ## References
